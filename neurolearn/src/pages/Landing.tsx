@@ -591,33 +591,145 @@ export default function Landing() {
       </section>
 
       {/* FOOTER */}
-      <footer className="relative z-10 px-8 py-10 border-t border-white/5">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary">
-              <Brain className="h-4 w-4 text-white" />
+      <footer className="relative z-10 border-t border-white/5 bg-card/20 backdrop-blur">
+        <div className="max-w-6xl mx-auto px-8 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+
+            {/* Brand column */}
+            <div className="md:col-span-1 space-y-4">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg shadow-primary/25">
+                  <Brain className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                  NeuroLearn AI
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                The AI-powered learning platform that adapts to you. Study smarter, not harder.
+              </p>
+              <div className="flex items-center gap-3 pt-1">
+                {[
+                  { label: "X", path: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
+                  { label: "Li", path: "M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z M4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" },
+                  { label: "Gh", path: "M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" },
+                ].map((s) => (
+                  <motion.div
+                    key={s.label}
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all cursor-pointer"
+                  >
+                    <svg className="h-3.5 w-3.5 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d={s.path} />
+                    </svg>
+                  </motion.div>
+                ))}
+              </div>
             </div>
-            <span className="text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-              NeuroLearn AI
-            </span>
+
+            {/* Product links */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-foreground">Product</h4>
+              <ul className="space-y-3">
+                {[
+                  { label: "Features", action: () => scrollTo("features") },
+                  { label: "Marketplace", action: () => navigate("/login?redirect=marketplace") },
+                  { label: "Pricing", action: () => scrollTo("pricing") },
+                  { label: "AI Tutor", action: () => navigate("/login") },
+                  { label: "Analytics", action: () => navigate("/login") },
+                  { label: "Study Planner", action: () => navigate("/login") },
+                ].map((link) => (
+                  <li key={link.label}>
+                    <button
+                      onClick={link.action}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer p-0 text-left"
+                    >
+                      {link.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Company links */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-foreground">Company</h4>
+              <ul className="space-y-3">
+                {[
+                  { label: "About Us", action: () => scrollTo("about") },
+                  { label: "Blog", action: () => {} },
+                  { label: "Careers", action: () => {} },
+                  { label: "Press Kit", action: () => {} },
+                  { label: "Contact Us", action: () => {} },
+                  { label: "Partners", action: () => {} },
+                ].map((link) => (
+                  <li key={link.label}>
+                    <button
+                      onClick={link.action}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer p-0 text-left"
+                    >
+                      {link.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Newsletter */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-foreground">Stay Updated</h4>
+              <p className="text-sm text-muted-foreground">Get the latest learning tips and product updates.</p>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    className="flex-1 h-9 rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-white/8 transition-all"
+                  />
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="h-9 px-4 rounded-lg bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold shrink-0"
+                  >
+                    Join
+                  </motion.button>
+                </div>
+                <p className="text-xs text-muted-foreground">No spam, unsubscribe anytime.</p>
+              </div>
+              <div className="pt-2 space-y-2">
+                <p className="text-xs font-medium text-foreground">Trusted by students from</p>
+                <div className="flex flex-wrap gap-2">
+                  {["MIT", "Stanford", "IIT", "Oxford"].map((uni) => (
+                    <span key={uni} className="text-xs px-2 py-1 rounded-md border border-white/10 bg-white/5 text-muted-foreground">
+                      {uni}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-6">
-            {["Features", "Marketplace", "Pricing", "About"].map((item, i) => (
-              <button
-                key={item}
-                onClick={[
-                  () => scrollTo("features"),
-                  () => navigate("/login?redirect=marketplace"),
-                  () => scrollTo("pricing"),
-                  () => scrollTo("about"),
-                ][i]}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
-              >
-                {item}
-              </button>
-            ))}
+
+          {/* Bottom bar */}
+          <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-muted-foreground">
+              © 2026 NeuroLearn AI, Inc. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6">
+              {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((item) => (
+                <button
+                  key={item}
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <p className="text-xs text-muted-foreground">All systems operational</p>
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground">© 2026 NeuroLearn AI. All rights reserved.</p>
         </div>
       </footer>
     </div>
