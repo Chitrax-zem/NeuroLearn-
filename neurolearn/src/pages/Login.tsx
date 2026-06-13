@@ -1,12 +1,18 @@
 import { motion } from "framer-motion";
-import { Link, useLocation } from "wouter";
-import { Brain, Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles } from "lucide-react";
+import { Link, useLocation, useSearch } from "wouter";
+import { Brain, Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function Login() {
   const [, setLocation] = useLocation();
+  const search = useSearch();
+  const params = new URLSearchParams(search);
+  const redirect = params.get("redirect");
+  const redirectTo = redirect === "marketplace" ? "/marketplace" : "/dashboard";
+  const fromMarketplace = redirect === "marketplace";
+
   const [mode, setMode] = useState<"login" | "register">("login");
   const [showPass, setShowPass] = useState(false);
   const [email, setEmail] = useState("");
@@ -14,11 +20,11 @@ export default function Login() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLocation("/dashboard");
+    setLocation(redirectTo);
   };
 
-  const handleGuest = () => setLocation("/dashboard");
-  const handleGoogle = () => setLocation("/dashboard");
+  const handleGuest = () => setLocation(redirectTo);
+  const handleGoogle = () => setLocation(redirectTo);
 
   const stats = [
     { value: "50,000+", label: "Active Learners" },
@@ -114,11 +120,27 @@ export default function Login() {
                 NeuroLearn AI
               </span>
             </Link>
+
+            {fromMarketplace && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-3 rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-3 mb-6"
+              >
+                <ShoppingBag className="h-4 w-4 text-secondary shrink-0" />
+                <p className="text-sm text-secondary font-medium">
+                  Sign in to access the Knowledge Marketplace
+                </p>
+              </motion.div>
+            )}
+
             <h1 className="text-3xl font-black mb-2">
               {mode === "login" ? "Welcome back" : "Create account"}
             </h1>
             <p className="text-muted-foreground text-sm">
-              {mode === "login" ? "Sign in to continue your learning journey" : "Start your AI-powered learning journey today"}
+              {mode === "login"
+                ? fromMarketplace ? "Sign in to browse & open knowledge packs" : "Sign in to continue your learning journey"
+                : "Start your AI-powered learning journey today"}
             </p>
           </div>
 
