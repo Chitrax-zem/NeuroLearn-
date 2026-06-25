@@ -18,6 +18,10 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+origins = [
+    "http://localhost:5173",
+    "https://neuro-learn-one.vercel.app/",
+]
 
 app.add_middleware(
     CORSMiddleware,
