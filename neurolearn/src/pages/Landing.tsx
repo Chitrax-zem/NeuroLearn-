@@ -1,4 +1,4 @@
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Brain, ArrowRight, Play, Sparkles, Star, ChevronRight, Check, Users, BookOpen, Award, Zap as ZapIcon, Globe, Heart } from "lucide-react";
@@ -11,21 +11,21 @@ function AnimatedCounter({ target, suffix = "" }: { target: string; suffix?: str
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
       viewport={{ once: true }}
-      className="text-4xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+      className="text-3xl font-bold font-mono text-[#5EF0DA]"
     >
       {target}{suffix}
     </motion.span>
   );
 }
 
-const particles = Array.from({ length: 30 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 3 + 1,
-  delay: Math.random() * 5,
-  duration: Math.random() * 10 + 10,
-}));
+// Faint ambient "synapse" threads behind the page — same visual language as
+// the sign-in screen, kept quiet so it reads as texture, not decoration.
+const threads = [
+  { x1: "8%", y1: "12%", x2: "28%", y2: "34%", delay: 0 },
+  { x1: "72%", y1: "8%", x2: "92%", y2: "26%", delay: 1.2 },
+  { x1: "15%", y1: "78%", x2: "38%", y2: "58%", delay: 2.1 },
+  { x1: "80%", y1: "70%", x2: "60%", y2: "90%", delay: 0.6 },
+];
 
 const pricingPlans = [
   {
@@ -51,7 +51,7 @@ const pricingPlans = [
     price: "$12",
     period: "per month",
     desc: "For serious learners",
-    color: "border-primary/40",
+    color: "border-[#5EF0DA]/40",
     badge: "Most Popular",
     features: [
       "Unlimited AI tutor sessions",
@@ -71,7 +71,7 @@ const pricingPlans = [
     price: "$29",
     period: "per month",
     desc: "For classrooms & institutions",
-    color: "border-secondary/30",
+    color: "border-white/10",
     badge: null,
     features: [
       "Everything in Pro",
@@ -89,10 +89,10 @@ const pricingPlans = [
 ];
 
 const teamMembers = [
-  { name: "Dr. Sarah Chen", role: "AI Research Lead", color: "from-blue-500 to-cyan-500", initials: "SC" },
-  { name: "Arjun Mehta", role: "Product & Design", color: "from-purple-500 to-pink-500", initials: "AM" },
-  { name: "Priya Nair", role: "Curriculum Science", color: "from-emerald-500 to-teal-500", initials: "PN" },
-  { name: "James Wilson", role: "Engineering Lead", color: "from-orange-500 to-yellow-500", initials: "JW" },
+  { name: "Dr. Sarah Chen", role: "AI Research Lead", initials: "SC" },
+  { name: "Arjun Mehta", role: "Product & Design", initials: "AM" },
+  { name: "Priya Nair", role: "Curriculum Science", initials: "PN" },
+  { name: "James Wilson", role: "Engineering Lead", initials: "JW" },
 ];
 
 export default function Landing() {
@@ -111,45 +111,39 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full opacity-20"
-          style={{ background: "radial-gradient(circle, hsl(217 91% 60%) 0%, transparent 70%)" }}
-          animate={{ scale: [1, 1.1, 1], x: [0, 30, 0], y: [0, -20, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute top-1/3 -right-40 w-[500px] h-[500px] rounded-full opacity-15"
-          style={{ background: "radial-gradient(circle, hsl(262 83% 58%) 0%, transparent 70%)" }}
-          animate={{ scale: [1, 1.2, 1], x: [0, -20, 0], y: [0, 30, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-        />
-        <motion.div
-          className="absolute bottom-0 left-1/3 w-[400px] h-[400px] rounded-full opacity-10"
-          style={{ background: "radial-gradient(circle, hsl(217 91% 60%) 0%, transparent 70%)" }}
-          animate={{ scale: [1, 1.15, 1], x: [0, 15, 0], y: [0, -25, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 6 }}
-        />
-        {particles.map((p) => (
-          <motion.div
-            key={p.id}
-            className="absolute rounded-full bg-primary/30"
-            style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size }}
-            animate={{ y: [0, -40, 0], opacity: [0.2, 0.8, 0.2] }}
-            transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: "easeInOut" }}
-          />
-        ))}
+    <div className="min-h-screen bg-[#070B14] text-[#EAF0F6] overflow-x-hidden">
+      {/* ambient backdrop: dot grid + faint synapse threads, fixed and quiet */}
+      <div
+        className="fixed inset-0 overflow-hidden pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0)",
+          backgroundSize: "28px 28px",
+        }}
+      >
+        <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+          {threads.map((t, i) => (
+            <motion.line
+              key={i}
+              x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+              stroke="#5EF0DA"
+              strokeWidth={1}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.12, 0] }}
+              transition={{ duration: 6, repeat: Infinity, delay: t.delay, ease: "easeInOut" }}
+            />
+          ))}
+        </svg>
+        <div className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full opacity-[0.07]" style={{ background: "radial-gradient(circle, #5EF0DA 0%, transparent 70%)" }} />
       </div>
 
       {/* NAV */}
-      <nav className="sticky top-0 z-50 flex h-16 items-center justify-between px-8 border-b border-white/5 bg-background/70 backdrop-blur-xl">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg shadow-primary/25">
-            <Brain className="h-5 w-5 text-white" />
+      <nav className="sticky top-0 z-50 flex h-16 items-center justify-between px-8 border-b border-white/5 bg-[#070B14]/80 backdrop-blur-xl">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#5EF0DA]">
+            <Brain className="h-4.5 w-4.5 text-[#06121A]" strokeWidth={2.5} />
           </div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            NeuroLearn AI
+          <span className="text-sm font-mono uppercase tracking-[0.2em] text-[#EAF0F6]">
+            NeuroLearn <span className="text-[#5EF0DA]">AI</span>
           </span>
         </div>
         <div className="hidden md:flex items-center gap-8">
@@ -159,7 +153,7 @@ export default function Landing() {
               onClick={item.action}
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.97 }}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer bg-transparent border-none outline-none"
+              className="text-sm font-mono uppercase tracking-wide text-[#7C8AA3] hover:text-[#5EF0DA] transition-colors cursor-pointer bg-transparent border-none outline-none"
             >
               {item.label}
             </motion.button>
@@ -167,12 +161,12 @@ export default function Landing() {
         </div>
         <div className="flex items-center gap-3">
           <Link href="/login">
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="sm" className="text-[#7C8AA3] hover:text-[#EAF0F6] hover:bg-white/5">
               Log In
             </Button>
           </Link>
           <Link href="/login">
-            <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg hover:shadow-primary/25 transition-all text-white border-0">
+            <Button size="sm" className="bg-[#5EF0DA] hover:bg-[#7BF4E1] text-[#06121A] border-0 font-semibold transition-colors">
               Start Free
             </Button>
           </Link>
@@ -188,16 +182,19 @@ export default function Landing() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
             >
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm text-primary mb-6">
-                <Sparkles className="h-4 w-4" />
-                <span>AI-Powered Learning Platform</span>
+              <div className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-[#5EF0DA] mb-6">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-[#5EF0DA] opacity-75 animate-ping" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#5EF0DA]" />
+                </span>
+                AI-powered learning platform
               </div>
               <h1 className="text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight">
-                <span className="text-foreground">Learn Anything.</span>
+                <span className="text-[#EAF0F6]">Learn Anything.</span>
                 <br />
-                <span className="text-foreground">Anytime.</span>
+                <span className="text-[#EAF0F6]">Anytime.</span>
                 <br />
-                <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+                <span className="text-[#5EF0DA]">
                   With Your Personal AI Tutor.
                 </span>
               </h1>
@@ -206,7 +203,7 @@ export default function Landing() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-lg text-muted-foreground leading-relaxed max-w-xl"
+              className="text-lg text-[#7C8AA3] leading-relaxed max-w-xl"
             >
               NeuroLearn AI transforms textbooks, notes, PDFs and knowledge packs into personalized AI tutoring experiences — adapting to your pace, your gaps, your goals.
             </motion.p>
@@ -216,23 +213,26 @@ export default function Landing() {
               transition={{ duration: 0.7, delay: 0.4 }}
               className="flex flex-wrap gap-4"
             >
-              <Link href="/dashboard">
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-white border-0 shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-shadow h-12 px-8 text-base font-semibold">
+              <Link href="/login">
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+                  <Button
+                    size="lg"
+                    className="bg-[#5EF0DA] hover:bg-[#7BF4E1] text-[#06121A] border-0 h-12 px-8 text-base font-mono uppercase tracking-wide font-semibold transition-colors"
+                  >
                     Start Learning Free
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </motion.div>
               </Link>
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="border-white/10 bg-white/5 backdrop-blur hover:bg-white/10 h-12 px-8 text-base font-semibold gap-2"
+                  className="border-white/15 bg-transparent text-[#EAF0F6] hover:bg-white/5 h-12 px-8 text-base font-semibold gap-2"
                   onClick={() => scrollTo("features")}
                 >
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/20">
-                    <Play className="h-3 w-3 text-primary fill-primary" />
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5EF0DA]/15">
+                    <Play className="h-3 w-3 text-[#5EF0DA] fill-[#5EF0DA]" />
                   </div>
                   See Features
                 </Button>
@@ -245,17 +245,17 @@ export default function Landing() {
               className="flex items-center gap-4"
             >
               <div className="flex -space-x-2">
-                {["#3B82F6", "#8B5CF6", "#10B981", "#F59E0B"].map((color, i) => (
-                  <div key={i} className="h-8 w-8 rounded-full border-2 border-background" style={{ backgroundColor: color }} />
+                {["#5EF0DA", "#FBBF24", "#5EF0DA", "#7C8AA3"].map((color, i) => (
+                  <div key={i} className="h-8 w-8 rounded-full border-2 border-[#070B14]" style={{ backgroundColor: color }} />
                 ))}
               </div>
               <div>
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} className="h-3.5 w-3.5 fill-[#FBBF24] text-[#FBBF24]" />
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground">Loved by 50,000+ students</p>
+                <p className="text-xs text-[#7C8AA3]">Loved by 50,000+ students</p>
               </div>
             </motion.div>
           </div>
@@ -266,20 +266,20 @@ export default function Landing() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="relative"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl blur-2xl" />
-            <div className="relative rounded-2xl border border-white/10 bg-card/80 backdrop-blur-xl p-6 shadow-2xl">
+            <div className="absolute inset-0 bg-[#5EF0DA]/10 rounded-2xl blur-3xl" />
+            <div className="relative rounded-xl border border-white/10 bg-[#0B121F] p-6 shadow-2xl">
               <div className="flex items-center gap-3 mb-5 pb-4 border-b border-white/5">
                 <motion.div
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary shadow-lg"
-                  animate={{ boxShadow: ["0 0 0 0 rgba(59,130,246,0.4)", "0 0 0 8px rgba(59,130,246,0)", "0 0 0 0 rgba(59,130,246,0)"] }}
+                  className="flex h-9 w-9 items-center justify-center rounded-md bg-[#5EF0DA]"
+                  animate={{ boxShadow: ["0 0 0 0 rgba(94,240,218,0.4)", "0 0 0 8px rgba(94,240,218,0)", "0 0 0 0 rgba(94,240,218,0)"] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <Brain className="h-5 w-5 text-white" />
+                  <Brain className="h-5 w-5 text-[#06121A]" />
                 </motion.div>
                 <div>
-                  <p className="text-sm font-semibold">NeuroLearn AI</p>
-                  <p className="text-xs text-green-400 flex items-center gap-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-400 inline-block" />
+                  <p className="text-sm font-semibold text-[#EAF0F6]">NeuroLearn AI</p>
+                  <p className="text-xs text-[#5EF0DA] flex items-center gap-1 font-mono">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#5EF0DA] inline-block" />
                     Online — Your AI Tutor
                   </p>
                 </div>
@@ -287,38 +287,40 @@ export default function Landing() {
 
               <div className="space-y-4">
                 <div className="flex justify-end">
-                  <div className="max-w-[80%] rounded-2xl rounded-tr-sm bg-gradient-to-r from-primary to-secondary px-4 py-3">
-                    <p className="text-sm text-white font-medium">Explain Newton's Second Law</p>
+                  <div className="max-w-[80%] rounded-xl rounded-tr-sm bg-[#5EF0DA] px-4 py-3">
+                    <p className="text-sm text-[#06121A] font-medium">Explain Newton's Second Law</p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="rounded-xl border border-white/5 bg-card/50 p-4">
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Newton's Second Law states that the <span className="text-foreground font-medium">acceleration of an object</span> is directly proportional to the net force acting on it and inversely proportional to its mass.
+                  <div className="rounded-lg border border-white/5 bg-white/[0.02] p-4">
+                    <p className="text-sm text-[#7C8AA3] leading-relaxed">
+                      Newton's Second Law states that the <span className="text-[#EAF0F6] font-medium">acceleration of an object</span> is directly proportional to the net force acting on it and inversely proportional to its mass.
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
-                    <p className="text-xs text-primary font-semibold uppercase tracking-wider mb-2">Formula</p>
-                    <p className="text-2xl font-black text-center text-foreground py-2">
-                      <span className="text-primary">F</span> = <span className="text-secondary">m</span> × <span className="text-green-400">a</span>
+                  <div className="rounded-lg border border-[#5EF0DA]/20 bg-[#5EF0DA]/5 p-4">
+                    <p className="text-xs text-[#5EF0DA] font-mono uppercase tracking-wider mb-2">Formula</p>
+                    <p className="text-2xl font-black text-center text-[#EAF0F6] py-2">
+                      <span className="text-[#5EF0DA]">F</span> = <span className="text-[#FBBF24]">m</span> × <span className="text-[#EAF0F6]">a</span>
                     </p>
-                    <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                      <span className="text-primary">F = Force (N)</span>
-                      <span className="text-secondary">m = Mass (kg)</span>
-                      <span className="text-green-400">a = Accel. (m/s²)</span>
+                    <div className="flex justify-between text-xs text-[#7C8AA3] mt-2 font-mono">
+                      <span className="text-[#5EF0DA]">F = Force (N)</span>
+                      <span className="text-[#FBBF24]">m = Mass (kg)</span>
+                      <span className="text-[#EAF0F6]">a = Accel. (m/s²)</span>
                     </div>
                   </div>
 
-                  <Link href="/quiz">
+                  <Link href="/login?redirect=quiz">
                     <motion.div
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center justify-center gap-2 rounded-xl border border-secondary/30 bg-secondary/10 py-3 cursor-pointer hover:bg-secondary/20 transition-colors"
+                      className="flex items-center justify-center gap-2 rounded-lg border border-[#FBBF24]/30 bg-[#FBBF24]/5 py-3 cursor-pointer hover:bg-[#FBBF24]/10 transition-colors"
                     >
-                      <ZapIcon className="h-4 w-4 text-secondary" />
-                      <span className="text-sm font-semibold text-secondary">Take a Quiz on this topic</span>
+                      <ZapIcon className="h-4 w-4 text-[#FBBF24]" />
+                      <span className="text-sm font-semibold text-[#FBBF24]">
+                        Take a Quiz on this topic
+                      </span>
                     </motion.div>
                   </Link>
                 </div>
@@ -329,23 +331,23 @@ export default function Landing() {
       </section>
 
       {/* STATS */}
-      <section className="relative z-10 px-8 py-16">
-        <div className="max-w-4xl mx-auto grid grid-cols-3 gap-6">
+      <section className="relative z-10 px-8 py-12">
+        <div className="max-w-3xl mx-auto flex items-stretch divide-x divide-white/10 border border-white/10 rounded-lg">
           {[
-            { value: "50,000+", label: "Students Worldwide" },
-            { value: "1M+", label: "Questions Solved" },
-            { value: "95%", label: "Learning Satisfaction" },
+            { value: "50,000+", label: "Students worldwide" },
+            { value: "1M+", label: "Questions solved" },
+            { value: "95%", label: "Learning satisfaction" },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur p-6 text-center hover:border-primary/30 hover:bg-card transition-all"
+              className="flex-1 text-center py-6"
             >
               <AnimatedCounter target={stat.value} />
-              <p className="mt-2 text-sm text-muted-foreground">{stat.label}</p>
+              <p className="mt-2 text-xs uppercase tracking-wide text-[#7C8AA3]">{stat.label}</p>
             </motion.div>
           ))}
         </div>
@@ -359,36 +361,34 @@ export default function Landing() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs text-primary mb-4">
-              <Sparkles className="h-3 w-3" /> Platform Features
-            </div>
-            <h2 className="text-4xl font-black mb-4">Everything you need to learn smarter</h2>
-            <p className="text-muted-foreground text-lg">Powered by cutting-edge AI technology</p>
+            <span className="font-mono text-xs uppercase tracking-[0.2em] text-[#5EF0DA]">// platform features</span>
+            <h2 className="text-4xl font-black mt-3 mb-4 text-[#EAF0F6]">Everything you need to learn smarter</h2>
+            <p className="text-[#7C8AA3] text-lg">Powered by cutting-edge AI technology</p>
           </motion.div>
         </div>
-        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-6">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-5">
           {[
-            { icon: Brain, title: "AI-Powered Tutoring", desc: "Your personal AI tutor adapts explanations to match your learning style and pace in real-time.", color: "from-primary/20 to-primary/5", iconColor: "text-primary" },
-            { icon: BookOpen, title: "Knowledge Marketplace", desc: "Access thousands of expert-curated learning packs from top educators and institutions worldwide.", color: "from-secondary/20 to-secondary/5", iconColor: "text-secondary" },
-            { icon: Award, title: "Gamified Learning", desc: "Earn XP, unlock achievements, and compete on leaderboards to stay motivated every single day.", color: "from-yellow-500/20 to-yellow-500/5", iconColor: "text-yellow-400" },
-            { icon: ZapIcon, title: "Instant Quizzes", desc: "Auto-generated quizzes from any topic you study, with instant feedback and spaced repetition.", color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-400" },
-            { icon: Globe, title: "Study Planner", desc: "AI builds your personalized weekly study schedule based on your goals, pace, and exam dates.", color: "from-cyan-500/20 to-cyan-500/5", iconColor: "text-cyan-400" },
-            { icon: Users, title: "Community & Leaderboard", desc: "Learn alongside 50,000+ students. Compete globally or with your class on live leaderboards.", color: "from-pink-500/20 to-pink-500/5", iconColor: "text-pink-400" },
+            { icon: Brain, title: "AI-Powered Tutoring", desc: "Your personal AI tutor adapts explanations to match your learning style and pace in real-time.", accent: "teal" },
+            { icon: BookOpen, title: "Knowledge Marketplace", desc: "Access thousands of expert-curated learning packs from top educators and institutions worldwide.", accent: "amber" },
+            { icon: Award, title: "Gamified Learning", desc: "Earn XP, unlock achievements, and compete on leaderboards to stay motivated every single day.", accent: "teal" },
+            { icon: ZapIcon, title: "Instant Quizzes", desc: "Auto-generated quizzes from any topic you study, with instant feedback and spaced repetition.", accent: "amber" },
+            { icon: Globe, title: "Study Planner", desc: "AI builds your personalized weekly study schedule based on your goals, pace, and exam dates.", accent: "teal" },
+            { icon: Users, title: "Community & Leaderboard", desc: "Learn alongside 50,000+ students. Compete globally or with your class on live leaderboards.", accent: "amber" },
           ].map((feature, i) => (
             <motion.div
               key={feature.title}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              whileHover={{ y: -6, transition: { duration: 0.2 } }}
-              className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur p-6 hover:border-white/20 hover:shadow-xl hover:shadow-black/20 transition-all"
+              transition={{ delay: i * 0.08 }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="rounded-lg border border-white/10 bg-white/[0.02] p-6 hover:border-white/20 transition-all"
             >
-              <div className={`inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${feature.color} mb-4`}>
-                <feature.icon className={`h-6 w-6 ${feature.iconColor}`} />
+              <div className={`inline-flex h-11 w-11 items-center justify-center rounded-md mb-4 ${feature.accent === "teal" ? "bg-[#5EF0DA]/10" : "bg-[#FBBF24]/10"}`}>
+                <feature.icon className={`h-5 w-5 ${feature.accent === "teal" ? "text-[#5EF0DA]" : "text-[#FBBF24]"}`} />
               </div>
-              <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
+              <h3 className="text-base font-semibold mb-2 text-[#EAF0F6]">{feature.title}</h3>
+              <p className="text-sm text-[#7C8AA3] leading-relaxed">{feature.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -403,11 +403,9 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <div className="inline-flex items-center gap-2 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-1.5 text-xs text-secondary mb-4">
-                <ZapIcon className="h-3 w-3" /> Simple Pricing
-              </div>
-              <h2 className="text-4xl font-black mb-4">Start free, scale as you grow</h2>
-              <p className="text-muted-foreground text-lg">No hidden fees. Cancel anytime.</p>
+              <span className="font-mono text-xs uppercase tracking-[0.2em] text-[#5EF0DA]">// simple pricing</span>
+              <h2 className="text-4xl font-black mt-3 mb-4 text-[#EAF0F6]">Start free, scale as you grow</h2>
+              <p className="text-[#7C8AA3] text-lg">No hidden fees. Cancel anytime.</p>
             </motion.div>
           </div>
 
@@ -420,29 +418,29 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12 }}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className={`relative rounded-2xl border ${plan.color} bg-card/50 backdrop-blur p-7 ${plan.highlight ? "shadow-2xl shadow-primary/20 ring-1 ring-primary/30" : ""}`}
+                className={`relative rounded-lg border ${plan.color} bg-white/[0.02] p-7 ${plan.highlight ? "ring-1 ring-[#5EF0DA]/40" : ""}`}
               >
                 {plan.badge && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-primary to-secondary px-3 py-1 text-xs font-bold text-white shadow-lg">
-                      <Star className="h-3 w-3 fill-white" /> {plan.badge}
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[#5EF0DA] px-3 py-1 text-xs font-mono font-bold uppercase tracking-wide text-[#06121A]">
+                      <Star className="h-3 w-3 fill-[#06121A]" /> {plan.badge}
                     </span>
                   </div>
                 )}
                 <div className="mb-6">
-                  <p className="text-sm font-semibold text-muted-foreground mb-1">{plan.name}</p>
+                  <p className="text-sm font-mono uppercase tracking-wide text-[#7C8AA3] mb-1">{plan.name}</p>
                   <div className="flex items-end gap-1.5">
-                    <span className="text-4xl font-black text-foreground">{plan.price}</span>
-                    <span className="text-sm text-muted-foreground mb-1.5">/{plan.period}</span>
+                    <span className="text-4xl font-black text-[#EAF0F6]">{plan.price}</span>
+                    <span className="text-sm text-[#7C8AA3] mb-1.5">/{plan.period}</span>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">{plan.desc}</p>
+                  <p className="text-sm text-[#7C8AA3] mt-1">{plan.desc}</p>
                 </div>
 
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-sm">
-                      <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                      <span className="text-muted-foreground">{f}</span>
+                      <Check className="h-4 w-4 text-[#5EF0DA] mt-0.5 shrink-0" />
+                      <span className="text-[#7C8AA3]">{f}</span>
                     </li>
                   ))}
                 </ul>
@@ -450,7 +448,7 @@ export default function Landing() {
                 <Link href="/login">
                   <Button
                     variant={plan.highlight ? "default" : "outline"}
-                    className={`w-full ${plan.highlight ? "bg-gradient-to-r from-primary to-secondary text-white border-0 shadow-lg shadow-primary/25 hover:shadow-primary/40" : "border-white/10 hover:bg-white/5"}`}
+                    className={`w-full ${plan.highlight ? "bg-[#5EF0DA] hover:bg-[#7BF4E1] text-[#06121A] border-0 font-semibold" : "border-white/15 text-[#EAF0F6] hover:bg-white/5"}`}
                   >
                     {plan.cta}
                     <ChevronRight className="ml-1.5 h-4 w-4" />
@@ -464,7 +462,7 @@ export default function Landing() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-center text-sm text-muted-foreground mt-8"
+            className="text-center text-sm text-[#7C8AA3] mt-8"
           >
             All plans include a 14-day free trial. No credit card required.
           </motion.p>
@@ -480,28 +478,26 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5 text-xs text-emerald-400 mb-4">
-                <Heart className="h-3 w-3" /> Our Story
-              </div>
-              <h2 className="text-4xl font-black mb-4">Built by learners, for learners</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              <span className="font-mono text-xs uppercase tracking-[0.2em] text-[#5EF0DA]">// our story</span>
+              <h2 className="text-4xl font-black mt-3 mb-4 text-[#EAF0F6]">Built by learners, for learners</h2>
+              <p className="text-[#7C8AA3] text-lg max-w-2xl mx-auto">
                 We believe every student deserves a world-class tutor — regardless of budget, location, or background. NeuroLearn AI makes that possible through the power of artificial intelligence.
               </p>
             </motion.div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 mb-16">
+          <div className="grid md:grid-cols-2 gap-6 mb-16">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur p-8"
+              className="rounded-lg border border-white/10 bg-white/[0.02] p-8"
             >
-              <h3 className="text-xl font-bold mb-4">Our Mission</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
+              <h3 className="text-xl font-bold mb-4 text-[#EAF0F6]">Our Mission</h3>
+              <p className="text-[#7C8AA3] leading-relaxed mb-4">
                 Traditional education is broken. Students spend thousands on tutors, courses, and textbooks — yet learning outcomes haven't improved in decades.
               </p>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-[#7C8AA3] leading-relaxed">
                 NeuroLearn AI is our answer: an intelligent, adaptive, gamified learning platform that meets students where they are — and gets them where they want to be.
               </p>
             </motion.div>
@@ -510,9 +506,9 @@ export default function Landing() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur p-8"
+              className="rounded-lg border border-white/10 bg-white/[0.02] p-8"
             >
-              <h3 className="text-xl font-bold mb-4">Why NeuroLearn?</h3>
+              <h3 className="text-xl font-bold mb-4 text-[#EAF0F6]">Why NeuroLearn?</h3>
               <ul className="space-y-3">
                 {[
                   "Personalized AI that adapts to YOUR learning style",
@@ -521,8 +517,8 @@ export default function Landing() {
                   "Analytics that show exactly where you need help",
                   "Affordable — 10x cheaper than private tutoring",
                 ].map((point) => (
-                  <li key={point} className="flex items-start gap-2.5 text-sm text-muted-foreground">
-                    <Check className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
+                  <li key={point} className="flex items-start gap-2.5 text-sm text-[#7C8AA3]">
+                    <Check className="h-4 w-4 text-[#5EF0DA] mt-0.5 shrink-0" />
                     {point}
                   </li>
                 ))}
@@ -531,8 +527,8 @@ export default function Landing() {
           </div>
 
           <div className="text-center mb-10">
-            <h3 className="text-2xl font-bold mb-2">Meet the Team</h3>
-            <p className="text-muted-foreground text-sm">The minds behind NeuroLearn AI</p>
+            <h3 className="text-2xl font-bold mb-2 text-[#EAF0F6]">Meet the Team</h3>
+            <p className="text-[#7C8AA3] text-sm">The minds behind NeuroLearn AI</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
@@ -544,13 +540,13 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur p-6 text-center"
+                className="rounded-lg border border-white/10 bg-white/[0.02] p-6 text-center"
               >
-                <div className={`mx-auto h-14 w-14 rounded-2xl bg-gradient-to-br ${member.color} flex items-center justify-center text-white font-bold text-lg mb-3 shadow-lg`}>
+                <div className="mx-auto h-14 w-14 rounded-full border border-[#5EF0DA]/30 bg-[#5EF0DA]/5 flex items-center justify-center text-[#5EF0DA] font-mono font-bold text-lg mb-3">
                   {member.initials}
                 </div>
-                <p className="text-sm font-semibold">{member.name}</p>
-                <p className="text-xs text-muted-foreground mt-1">{member.role}</p>
+                <p className="text-sm font-semibold text-[#EAF0F6]">{member.name}</p>
+                <p className="text-xs text-[#7C8AA3] mt-1">{member.role}</p>
               </motion.div>
             ))}
           </div>
@@ -565,23 +561,23 @@ export default function Landing() {
           viewport={{ once: true }}
           className="max-w-3xl mx-auto text-center"
         >
-          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-primary/10 to-secondary/10 backdrop-blur p-12">
-            <h2 className="text-4xl font-black mb-4">Ready to learn smarter?</h2>
-            <p className="text-muted-foreground mb-8 text-lg">Join 50,000+ students transforming how they study.</p>
+          <div className="rounded-xl border border-[#5EF0DA]/20 bg-[#5EF0DA]/[0.04] p-12">
+            <h2 className="text-4xl font-black mb-4 text-[#EAF0F6]">Ready to learn smarter?</h2>
+            <p className="text-[#7C8AA3] mb-8 text-lg">Join 50,000+ students transforming how they study.</p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link href="/login">
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-white border-0 shadow-xl shadow-primary/30 h-12 px-10 text-base font-semibold">
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+                  <Button size="lg" className="bg-[#5EF0DA] hover:bg-[#7BF4E1] text-[#06121A] border-0 h-12 px-10 text-base font-mono uppercase tracking-wide font-semibold transition-colors">
                     Get Started Free
                     <ChevronRight className="ml-2 h-5 w-5" />
                   </Button>
                 </motion.div>
               </Link>
               <motion.button
-                whileHover={{ scale: 1.03 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => scrollTo("pricing")}
-                className="h-12 px-8 text-base font-semibold rounded-xl border border-white/10 bg-white/5 backdrop-blur hover:bg-white/10 transition-colors text-foreground"
+                className="h-12 px-8 text-base font-semibold rounded-md border border-white/15 bg-transparent hover:bg-white/5 transition-colors text-[#EAF0F6]"
               >
                 View Pricing
               </motion.button>
@@ -591,21 +587,21 @@ export default function Landing() {
       </section>
 
       {/* FOOTER */}
-      <footer className="relative z-10 border-t border-white/5 bg-card/20 backdrop-blur">
+      <footer className="relative z-10 border-t border-white/5 bg-[#070B14]">
         <div className="max-w-6xl mx-auto px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
 
             {/* Brand column */}
             <div className="md:col-span-1 space-y-4">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg shadow-primary/25">
-                  <Brain className="h-5 w-5 text-white" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[#5EF0DA]">
+                  <Brain className="h-5 w-5 text-[#06121A]" />
                 </div>
-                <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-                  NeuroLearn AI
+                <span className="text-sm font-mono uppercase tracking-[0.2em] text-[#EAF0F6]">
+                  NeuroLearn <span className="text-[#5EF0DA]">AI</span>
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-sm text-[#7C8AA3] leading-relaxed">
                 The AI-powered learning platform that adapts to you. Study smarter, not harder.
               </p>
               <div className="flex items-center gap-3 pt-1">
@@ -616,11 +612,11 @@ export default function Landing() {
                 ].map((s) => (
                   <motion.div
                     key={s.label}
-                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileHover={{ scale: 1.08, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all cursor-pointer"
+                    className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-white/[0.02] hover:border-[#5EF0DA]/40 transition-all cursor-pointer"
                   >
-                    <svg className="h-3.5 w-3.5 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg className="h-3.5 w-3.5 text-[#7C8AA3]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d={s.path} />
                     </svg>
                   </motion.div>
@@ -630,7 +626,7 @@ export default function Landing() {
 
             {/* Product links */}
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-foreground">Product</h4>
+              <h4 className="text-sm font-mono uppercase tracking-wide text-[#EAF0F6]">Product</h4>
               <ul className="space-y-3">
                 {[
                   { label: "Features", action: () => scrollTo("features") },
@@ -643,7 +639,7 @@ export default function Landing() {
                   <li key={link.label}>
                     <button
                       onClick={link.action}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer p-0 text-left"
+                      className="text-sm text-[#7C8AA3] hover:text-[#5EF0DA] transition-colors bg-transparent border-none cursor-pointer p-0 text-left"
                     >
                       {link.label}
                     </button>
@@ -654,7 +650,7 @@ export default function Landing() {
 
             {/* Company links */}
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-foreground">Company</h4>
+              <h4 className="text-sm font-mono uppercase tracking-wide text-[#EAF0F6]">Company</h4>
               <ul className="space-y-3">
                 {[
                   { label: "About Us", action: () => scrollTo("about") },
@@ -667,7 +663,7 @@ export default function Landing() {
                   <li key={link.label}>
                     <button
                       onClick={link.action}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer p-0 text-left"
+                      className="text-sm text-[#7C8AA3] hover:text-[#5EF0DA] transition-colors bg-transparent border-none cursor-pointer p-0 text-left"
                     >
                       {link.label}
                     </button>
@@ -678,30 +674,30 @@ export default function Landing() {
 
             {/* Newsletter */}
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-foreground">Stay Updated</h4>
-              <p className="text-sm text-muted-foreground">Get the latest learning tips and product updates.</p>
+              <h4 className="text-sm font-mono uppercase tracking-wide text-[#EAF0F6]">Stay Updated</h4>
+              <p className="text-sm text-[#7C8AA3]">Get the latest learning tips and product updates.</p>
               <div className="space-y-2">
                 <div className="flex gap-2">
                   <input
                     type="email"
                     placeholder="your@email.com"
-                    className="flex-1 h-9 rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-white/8 transition-all"
+                    className="flex-1 h-9 rounded-md border border-white/10 bg-white/[0.02] px-3 text-sm text-[#EAF0F6] placeholder:text-[#7C8AA3] focus:outline-none focus:border-[#5EF0DA]/50 transition-all"
                   />
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.97 }}
-                    className="h-9 px-4 rounded-lg bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold shrink-0"
+                    className="h-9 px-4 rounded-md bg-[#5EF0DA] text-[#06121A] text-sm font-semibold shrink-0"
                   >
                     Join
                   </motion.button>
                 </div>
-                <p className="text-xs text-muted-foreground">No spam, unsubscribe anytime.</p>
+                <p className="text-xs text-[#7C8AA3]">No spam, unsubscribe anytime.</p>
               </div>
               <div className="pt-2 space-y-2">
-                <p className="text-xs font-medium text-foreground">Trusted by students from</p>
+                <p className="text-xs font-medium text-[#EAF0F6]">Trusted by students from</p>
                 <div className="flex flex-wrap gap-2">
                   {["MIT", "Stanford", "IIT", "Oxford"].map((uni) => (
-                    <span key={uni} className="text-xs px-2 py-1 rounded-md border border-white/10 bg-white/5 text-muted-foreground">
+                    <span key={uni} className="text-xs px-2 py-1 rounded-md border border-white/10 bg-white/[0.02] text-[#7C8AA3]">
                       {uni}
                     </span>
                   ))}
@@ -712,14 +708,14 @@ export default function Landing() {
 
           {/* Bottom bar */}
           <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-[#7C8AA3]">
               © 2026 NeuroLearn AI, Inc. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
               {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((item) => (
                 <button
                   key={item}
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
+                  className="text-xs text-[#7C8AA3] hover:text-[#EAF0F6] transition-colors bg-transparent border-none cursor-pointer"
                 >
                   {item}
                 </button>
@@ -727,7 +723,7 @@ export default function Landing() {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <p className="text-xs text-muted-foreground">All systems operational</p>
+              <p className="text-xs text-[#7C8AA3]">All systems operational</p>
             </div>
           </div>
         </div>

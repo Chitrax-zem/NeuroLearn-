@@ -12,11 +12,17 @@ import AITutor from "@/pages/AITutor";
 import Marketplace from "@/pages/Marketplace";
 import Quiz from "@/pages/Quiz";
 import QuizResults from "@/pages/QuizResults";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Analytics from "@/pages/Analytics";
 import Planner from "@/pages/Planner";
 import Profile from "@/pages/Profile";
+import UploadKnowledgePack from "@/pages/UploadKnowledgePack";
 
+const handleGuest = () => {
+  alert("Guest mode not available");
+};
 const queryClient = new QueryClient();
+
 
 function Router() {
   const [location] = useLocation();
@@ -26,14 +32,15 @@ function Router() {
       <Switch location={location} key={location}>
         <Route path="/" component={Landing} />
         <Route path="/login" component={Login} />
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/tutor" component={AITutor} />
-        <Route path="/marketplace" component={Marketplace} />
-        <Route path="/quiz" component={Quiz} />
+        <Route path="/dashboard"><ProtectedRoute><Dashboard /></ProtectedRoute></Route>
+        <Route path="/tutor"><ProtectedRoute><AITutor/></ProtectedRoute></Route>
+        <Route path="/marketplace"><ProtectedRoute><Marketplace /></ProtectedRoute></Route>
+        <Route path="/quiz"><ProtectedRoute><Quiz/></ProtectedRoute></Route>
         <Route path="/quiz/results" component={QuizResults} />
-        <Route path="/analytics" component={Analytics} />
-        <Route path="/planner" component={Planner} />
-        <Route path="/profile" component={Profile} />
+         <Route path="/analytics"><ProtectedRoute><Analytics /></ProtectedRoute></Route>
+         <Route path="/planner"><ProtectedRoute><Planner /></ProtectedRoute></Route>
+        <Route path="/profile"><ProtectedRoute><Profile /></ProtectedRoute></Route>
+         <Route path="/upload-pack"component={UploadKnowledgePack}/>
         <Route component={NotFound} />
       </Switch>
     </AnimatePresence>

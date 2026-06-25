@@ -1,0 +1,49 @@
+# Python
+backend/venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node
+node_modules/
+
+# React / Vite
+dist/
+build/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Python cache
+.pytest_cache/
+.mypy_cache/
+
+# Uploads
+uploads/
+
+# FAISS
+faiss_indexes/
+
+# Model files
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# Temporary
+temp/
+tmp/

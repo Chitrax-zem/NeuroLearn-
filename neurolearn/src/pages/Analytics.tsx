@@ -6,46 +6,18 @@ import {
 import { TrendingUp, Clock, Target, Zap, Brain, ArrowUpRight } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { getAnalytics } from "@/lib/api";
 
-const weeklyData = [
-  { day: "Mon", minutes: 45 },
-  { day: "Tue", minutes: 80 },
-  { day: "Wed", minutes: 30 },
-  { day: "Thu", minutes: 90 },
-  { day: "Fri", minutes: 60 },
-  { day: "Sat", minutes: 120 },
-  { day: "Sun", minutes: 75 },
-];
-
-const radarData = [
-  { subject: "Physics", score: 72 },
-  { subject: "Math", score: 58 },
-  { subject: "Chemistry", score: 45 },
-  { subject: "CS", score: 83 },
-  { subject: "Biology", score: 61 },
-];
 
 const heatmapData = Array.from({ length: 90 }, (_, i) => ({
   id: i,
   value: Math.random(),
 }));
 
-const stats = [
-  { label: "Study Hours", value: "47.5h", trend: "+12%", icon: Clock, color: "text-blue-400", bg: "from-blue-500/15 to-transparent", iconBg: "bg-blue-500/15" },
-  { label: "Mastery Score", value: "78/100", trend: "+5pts", icon: Target, color: "text-purple-400", bg: "from-purple-500/15 to-transparent", iconBg: "bg-purple-500/15" },
-  { label: "Questions Solved", value: "1,247", trend: "+89", icon: Zap, color: "text-yellow-400", bg: "from-yellow-500/15 to-transparent", iconBg: "bg-yellow-500/15" },
-  { label: "Knowledge Growth", value: "23%", trend: "+3%", icon: TrendingUp, color: "text-green-400", bg: "from-green-500/15 to-transparent", iconBg: "bg-green-500/15" },
-];
-
-const weakTopics = [
-  { name: "Electromagnetic Induction", score: 35 },
-  { name: "Integration Techniques", score: 42 },
-  { name: "Organic Reactions", score: 38 },
-];
-
 const recommendations = [
-  { title: "Review Electromagnetic Waves", subject: "Physics", reason: "Lowest mastery score", color: "border-blue-500/20 bg-blue-500/5" },
-  { title: "Practice Integration Drills", subject: "Mathematics", reason: "Needs reinforcement", color: "border-purple-500/20 bg-purple-500/5" },
+  { title: "Review Electromagnetic Waves", subject: "Physics", reason: "Lowest mastery score", color: "border-[#5EF0DA]/20 bg-[#5EF0DA]/5" },
+  { title: "Practice Integration Drills", subject: "Mathematics", reason: "Needs reinforcement", color: "border-[#A78BFA]/20 bg-[#A78BFA]/5" },
 ];
 
 function CustomTooltip({ active, payload, label }: any) {
@@ -53,7 +25,7 @@ function CustomTooltip({ active, payload, label }: any) {
     return (
       <div className="rounded-xl border border-white/10 bg-card/90 backdrop-blur px-3 py-2 text-sm">
         <p className="font-semibold">{label}</p>
-        <p className="text-primary">{payload[0].value} min</p>
+        <p className="text-[#5EF0DA]">{payload[0].value} min</p>
       </div>
     );
   }
@@ -61,6 +33,104 @@ function CustomTooltip({ active, payload, label }: any) {
 }
 
 export default function Analytics() {
+  const [analytics, setAnalytics] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadAnalytics = async () => {
+      try {
+        const data = await getAnalytics();
+
+        console.log("ANALYTICS:", data);
+
+        setAnalytics(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAnalytics();
+  }, []);
+
+  const weeklyData =
+    analytics?.weekly_data?.map(
+      (item: any) => ({
+        day: new Date(item.date)
+          .toLocaleDateString("en-US", {
+            weekday: "short",
+          }),
+        minutes: item.study_minutes,
+      })
+    ) || [];
+  
+  const radarData = Object.entries(
+  analytics?.subject_breakdown ?? {}
+).map(([subject, score]) => ({
+  subject,
+  score: Number(score),
+}));
+
+  const stats = analytics
+    ? [
+        {
+          label: "Study Hours",
+          value: `${analytics.total_study_hours}h`,
+          trend: "+",
+          icon: Clock,
+          color: "text-[#5EF0DA]",
+          bg: "from-[#5EF0DA]/15 to-transparent",
+          iconBg: "bg-[#5EF0DA]/15",
+        },
+        {
+          label: "Questions Asked",
+          value: analytics.total_questions,
+          trend: "+",
+          icon: Zap,
+          color: "text-yellow-400",
+          bg: "from-yellow-500/15 to-transparent",
+          iconBg: "bg-yellow-500/15",
+        },
+        {
+          label: "AI Sessions",
+          value: analytics.total_ai_sessions,
+          trend: "+",
+          icon: Brain,
+          color: "text-[#A78BFA]",
+          bg: "from-[#A78BFA]/15 to-transparent",
+          iconBg: "bg-[#A78BFA]/15",
+        },
+        {
+          label: "Uploads",
+          value: analytics.total_uploads,
+          trend: "+",
+          icon: TrendingUp,
+          color: "text-green-400",
+          bg: "from-green-500/15 to-transparent",
+          iconBg: "bg-green-500/15",
+        },
+      ]
+    : [];
+
+  const weakTopics =
+    analytics?.weak_topics?.map(
+      (topic: string) => ({
+        name: topic,
+        score: 30,
+      })
+    ) || [];
+
+  if (loading) {
+    return (
+      <AppShell>
+        <div className="p-6">
+          Loading analytics...
+        </div>
+      </AppShell>
+    );
+  }
+
   return (
     <AppShell>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 pb-8">
@@ -102,16 +172,16 @@ export default function Analytics() {
             className="lg:col-span-2 rounded-2xl border border-white/5 bg-card/50 p-5"
           >
             <h2 className="font-bold mb-4 flex items-center gap-2">
-              <Clock className="h-4 w-4 text-primary" />
+              <Clock className="h-4 w-4 text-[#5EF0DA]" />
               Weekly Activity
               <span className="text-xs text-muted-foreground font-normal ml-auto">This week</span>
             </h2>
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={weeklyData}>
                 <defs>
-                  <linearGradient id="blueGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(217 91% 60%)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(217 91% 60%)" stopOpacity={0} />
+                  <linearGradient id="tealGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#5EF0DA" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#5EF0DA" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -121,11 +191,11 @@ export default function Analytics() {
                 <Area
                   type="monotone"
                   dataKey="minutes"
-                  stroke="hsl(217 91% 60%)"
+                  stroke="#5EF0DA"
                   strokeWidth={2.5}
-                  fill="url(#blueGrad)"
-                  dot={{ fill: "hsl(217 91% 60%)", r: 4, strokeWidth: 2, stroke: "hsl(222 47% 7%)" }}
-                  activeDot={{ r: 6, fill: "hsl(217 91% 60%)" }}
+                  fill="url(#tealGrad)"
+                  dot={{ fill: "#5EF0DA", r: 4, strokeWidth: 2, stroke: "hsl(222 47% 7%)" }}
+                  activeDot={{ r: 6, fill: "#5EF0DA" }}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -138,7 +208,7 @@ export default function Analytics() {
             className="rounded-2xl border border-white/5 bg-card/50 p-5"
           >
             <h2 className="font-bold mb-4 flex items-center gap-2">
-              <Target className="h-4 w-4 text-secondary" />
+              <Target className="h-4 w-4 text-[#A78BFA]" />
               Subject Performance
             </h2>
             <ResponsiveContainer width="100%" height={200}>
@@ -148,8 +218,8 @@ export default function Analytics() {
                 <Radar
                   name="Score"
                   dataKey="score"
-                  stroke="hsl(262 83% 58%)"
-                  fill="hsl(262 83% 58%)"
+                  stroke="#A78BFA"
+                  fill="#A78BFA"
                   fillOpacity={0.2}
                   strokeWidth={2}
                 />
@@ -179,11 +249,11 @@ export default function Analytics() {
                 className="h-4 w-4 rounded-sm cursor-pointer hover:scale-125 transition-transform"
                 style={{
                   backgroundColor: d.value > 0.7
-                    ? "hsl(217 91% 60%)"
+                    ? "#5EF0DA"
                     : d.value > 0.4
-                    ? "hsl(217 91% 40%)"
+                    ? "rgba(94,240,218,0.55)"
                     : d.value > 0.1
-                    ? "hsl(217 91% 20%)"
+                    ? "rgba(94,240,218,0.25)"
                     : "rgba(255,255,255,0.04)",
                 }}
                 title={`${Math.round(d.value * 120)} min`}
@@ -192,7 +262,7 @@ export default function Analytics() {
           </div>
           <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
             <span>Less</span>
-            {["rgba(255,255,255,0.04)", "hsl(217 91% 20%)", "hsl(217 91% 40%)", "hsl(217 91% 60%)"].map((c, i) => (
+            {["rgba(255,255,255,0.04)", "rgba(94,240,218,0.25)", "rgba(94,240,218,0.55)", "#5EF0DA"].map((c, i) => (
               <div key={i} className="h-3 w-3 rounded-sm" style={{ backgroundColor: c }} />
             ))}
             <span>More</span>
@@ -234,7 +304,7 @@ export default function Analytics() {
             className="rounded-2xl border border-white/5 bg-card/50 p-5"
           >
             <h2 className="font-bold mb-4 text-sm flex items-center gap-2">
-              <Brain className="h-4 w-4 text-primary" />
+              <Brain className="h-4 w-4 text-[#5EF0DA]" />
               AI Recommendations
             </h2>
             <div className="space-y-3">
