@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Redirect } from "wouter";
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://neurolearn-t2rw.onrender.com";
 
 export default function ProtectedRoute({
   children,
