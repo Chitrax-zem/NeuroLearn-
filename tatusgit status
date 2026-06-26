@@ -1,0 +1,11 @@
+* [33mf79be3be[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Updated Cors
+* [33mf022abb8[m Fix CORS
+[31m|[m * [33m9e19a36a[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Update requirements.txt
+[31m|[m * [33mb393003e[m Update requirements.txt
+[31m|[m * [33mc1e2bac1[m Add additional CORS origins for the app
+[31m|[m * [33ma561273e[m Update api.ts
+[31m|[m[31m/[m  
+* [33m1fd1be69[m Update backend CORS and frontend API URL
+* [33m1e2e022e[m Update main.py
+* [33me95c3077[m Update CORS for Vercel
+* [33m7815e0bd[m Fix Render startup

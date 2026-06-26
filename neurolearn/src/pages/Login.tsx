@@ -16,7 +16,9 @@ import { login, register } from "../lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "http://127.0.0.1:8000";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -59,7 +61,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     );
 
     const meResponse = await fetch(
-      "${API_URL}/api/auth/me",
+      `${API_URL}/api/auth/me`,
       {
         headers: {
           Authorization: `Bearer ${data.access_token}`,
