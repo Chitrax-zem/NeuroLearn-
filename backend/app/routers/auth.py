@@ -92,7 +92,9 @@ def login(
         )
 
     print("HASH:", user.hashed_password)
-
+    print("BODY PASSWORD:", repr(body.password))
+    print("BODY PASSWORD LENGTH:", len(body.password))
+ 
     valid = verify_password(
         body.password,
         user.hashed_password

@@ -59,7 +59,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     );
 
     const meResponse = await fetch(
-      "http://127.0.0.1:8000/api/auth/me",
+      "${API_URL}/api/auth/me",
       {
         headers: {
           Authorization: `Bearer ${data.access_token}`,

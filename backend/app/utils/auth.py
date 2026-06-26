@@ -18,6 +18,13 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(plain: str, hashed: str) -> bool:
+    print("=" * 60)
+    print("TYPE:", type(plain))
+    print("PASSWORD:", repr(plain))
+    print("LENGTH:", len(plain))
+    print("HASH:", hashed)
+    print("=" * 60)
+
     return pwd_context.verify(plain, hashed)
 
 
