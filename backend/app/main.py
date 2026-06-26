@@ -53,8 +53,10 @@ app = FastAPI(
 
 origins = [
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
     "https://neuro-learn-one.vercel.app",
     "https://neuro-learn-d2rv-phi.vercel.app",
+    "https://neuro-learn-d2rv-gb3c4rsqq-chitransh-nigams-projects-f07e1331.vercel.app",
 ]
 
 app.add_middleware(
