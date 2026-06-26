@@ -53,6 +53,7 @@ app = FastAPI(
 
 origins = [
     "http://localhost:5173",
+    "https://neuro-learn-one.vercel.app",
     "https://neuro-learn-d2rv-phi.vercel.app",
 ]
 
