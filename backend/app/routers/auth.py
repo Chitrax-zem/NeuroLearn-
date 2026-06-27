@@ -94,6 +94,12 @@ def login(
     print("HASH:", user.hashed_password)
     print("BODY PASSWORD:", repr(body.password))
     print("BODY PASSWORD LENGTH:", len(body.password))
+    print("=" * 60)
+    print("EMAIL:", body.email)
+    print("PASSWORD:", repr(body.password))
+    print("TYPE:", type(body.password))
+    print("LEN:", len(body.password))
+    print("=" * 60)
  
     valid = verify_password(
         body.password,
