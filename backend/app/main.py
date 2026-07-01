@@ -5,16 +5,14 @@ import traceback
 
 from app.database import Base, engine
 
-from app.routers import (
-    auth,
-    upload,
-    chat,
-    quiz,
-    planner,
-    marketplace,
-    analytics,
-    profile,
-)
+print("importing auth..."); from app.routers import auth
+print("importing upload..."); from app.routers import upload
+print("importing chat..."); from app.routers import chat
+print("importing quiz..."); from app.routers import quiz
+print("importing planner..."); from app.routers import planner
+print("importing marketplace..."); from app.routers import marketplace
+print("importing analytics..."); from app.routers import analytics
+print("importing profile..."); from app.routers import profile
 
 
 @asynccontextmanager
