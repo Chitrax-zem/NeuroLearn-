@@ -10,9 +10,10 @@ import {
   ShoppingBag,
   Activity,
   Loader2,
+  KeyRound,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { login, register } from "../lib/api";
+import { login, register, sendOtp, verifyOtp } from "../lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -31,10 +32,40 @@ export default function Login() {
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const [mode, setMode] = useState<"login" | "register">("login");
+  const [step, setStep] = useState<"credentials" | "otp">("credentials");
+  const [otp, setOtp] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [showPass, setShowPass] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Ping the backend as soon as the login page loads so Render's free-tier
+  // instance is warm by the time the user submits the form.
+  useEffect(() => {
+    fetch(`${API_URL}/api/health`).catch(() => {});
+  }, []);
+
+const completeAuth = (data: any) => {
+  // Save token immediately
+  localStorage.setItem("access_token", data.access_token);
+
+  // Navigate NOW — don't block on /me
+  setLocation(redirectTo);
+
+  // Fetch user profile in the background after navigation
+  fetch(`${API_URL}/api/auth/me`, {
+    headers: { Authorization: `Bearer ${data.access_token}` },
+  })
+    .then((res) => res.json())
+    .then((user) => {
+      localStorage.setItem("user", JSON.stringify(user));
+      // storage event only fires cross-tab — dispatch manually so Dashboard
+      // re-reads localStorage and shows the real name in the same tab.
+      window.dispatchEvent(new Event("storage"));
+    })
+    .catch((err) => console.error("Failed to fetch user:", err));
+};
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -42,48 +73,63 @@ const handleSubmit = async (e: React.FormEvent) => {
   setLoading(true);
 
   try {
-    let data;
-
     if (mode === "login") {
-      data = await login(email, password);
+      const data = await login(email, password);
+      await completeAuth(data);
     } else {
-      data = await register(
-        fullName,
-        phoneNumber,
-        email,
-        password
-      );
+      // Registration no longer creates the account directly — verify the
+      // email with an OTP first, then /verify-otp + /register run on submit
+      // of the OTP step below.
+      await sendOtp(email);
+      setStep("otp");
     }
-
-    localStorage.setItem(
-      "access_token",
-      data.access_token
-    );
-
-    const meResponse = await fetch(
-      `${API_URL}/api/auth/me`,
-      {
-        headers: {
-          Authorization: `Bearer ${data.access_token}`,
-        },
-      }
-    );
-
-    const user = await meResponse.json();
-
-    localStorage.setItem(
-      "user",
-      JSON.stringify(user)
-    );
-
-    setLocation("/dashboard");
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    alert("Authentication failed");
+    alert(err.message || "Authentication failed");
   } finally {
     setLoading(false);
   }
 };
+
+const handleVerifyOtp = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  setLoading(true);
+
+  try {
+    await verifyOtp(email, otp);
+    const data = await register(
+      fullName,
+      phoneNumber,
+      email,
+      password
+    );
+    await completeAuth(data);
+  } catch (err: any) {
+    console.error(err);
+    alert(err.message || "Verification failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleResendOtp = async () => {
+  if (resendCooldown > 0) return;
+
+  try {
+    await sendOtp(email);
+    setResendCooldown(30);
+  } catch (err: any) {
+    console.error(err);
+    alert(err.message || "Failed to resend OTP");
+  }
+};
+
+useEffect(() => {
+  if (resendCooldown <= 0) return;
+  const id = setTimeout(() => setResendCooldown((s) => s - 1), 1000);
+  return () => clearTimeout(id);
+}, [resendCooldown]);
 
   const stats = [
     { value: "50,000+", label: "Active learners" },
@@ -327,18 +373,76 @@ const handleSubmit = async (e: React.FormEvent) => {
             )}
 
             <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#5EF0DA]">
-              {mode === "login" ? "// sign in" : "// create account"}
+              {step === "otp" ? "// verify email" : mode === "login" ? "// sign in" : "// create account"}
             </span>
             <h1 className="text-3xl font-black mt-2 mb-2 text-[#EAF0F6]">
-              {mode === "login" ? "Welcome back" : "Create account"}
+              {step === "otp" ? "Check your inbox" : mode === "login" ? "Welcome back" : "Create account"}
             </h1>
             <p className="text-[#7C8AA3] text-sm">
-              {mode === "login"
+              {step === "otp"
+                ? <>We sent a 6-digit code to <span className="text-[#EAF0F6]">{email}</span></>
+                : mode === "login"
                 ? fromMarketplace ? "Sign in to browse & open knowledge packs" : "Sign in to continue your learning journey"
                 : "Start your AI-powered learning journey today"}
             </p>
           </div>
 
+          {mode === "register" && step === "otp" ? (
+            <form onSubmit={handleVerifyOtp} className="space-y-6">
+              <div className="relative group">
+                <KeyRound className="absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-[#7C8AA3] group-focus-within:text-[#5EF0DA] transition-colors" />
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  placeholder="6-digit code"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                  className="pl-7 pr-2 h-11 rounded-none border-0 border-b border-white/15 bg-transparent text-[#EAF0F6] placeholder:text-[#7C8AA3]/70 focus-visible:ring-0 focus-visible:border-[#5EF0DA] transition-colors tracking-[0.3em] font-mono"
+                  data-testid="input-otp"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={loading || otp.length !== 6}
+                className="w-full h-11 rounded-md bg-[#5EF0DA] hover:bg-[#7BF4E1] text-[#06121A] border-0 font-mono uppercase tracking-wider text-sm font-semibold disabled:opacity-70"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  <>
+                    Verify & Create Account
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+
+              <div className="flex items-center justify-between text-sm">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep("credentials");
+                    setOtp("");
+                  }}
+                  className="text-[#7C8AA3] hover:text-[#5EF0DA] transition-colors"
+                >
+                  ← Back
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={resendCooldown > 0}
+                  className="text-[#7C8AA3] hover:text-[#5EF0DA] transition-colors disabled:opacity-50"
+                >
+                  {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend code"}
+                </button>
+              </div>
+            </form>
+          ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
 
   {mode === "register" && (
@@ -419,17 +523,24 @@ const handleSubmit = async (e: React.FormEvent) => {
 </Button>
 
 </form>
+          )}
 
+          {step === "credentials" && (
           <div className="text-center mt-6">
             <button
               type="button"
-              onClick={() => setMode(mode === "login" ? "register" : "login")}
+              onClick={() => {
+                setMode(mode === "login" ? "register" : "login");
+                setStep("credentials");
+                setOtp("");
+              }}
               className="text-sm text-[#7C8AA3] hover:text-[#5EF0DA] transition-colors"
             >
               {mode === "login" ? "Don't have an account? " : "Already have an account? "}
               <span className="font-semibold text-[#5EF0DA]">{mode === "login" ? "Create account" : "Sign in"}</span>
             </button>
           </div>
+          )}
         </div>
       </motion.div>
     </div>

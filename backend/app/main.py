@@ -101,3 +101,11 @@ async def healthz():
         "status": "healthy",
         "service": "NeuroLearn Backend",
     }
+
+
+@app.get("/api/ping")
+async def ping():
+    # Lightweight keep-alive endpoint.
+    # Point a free UptimeRobot monitor at this URL every 14 minutes
+    # to prevent Render's free tier from spinning down between requests.
+    return {"pong": True}

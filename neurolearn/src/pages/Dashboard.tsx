@@ -1,13 +1,12 @@
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Link } from "wouter";
 import {
   Brain, Zap, MessageSquare, TrendingUp, BookOpen, Clock,
   CheckCircle2, Circle, ArrowRight, Flame, Star, Play
 } from "lucide-react";
+import { useState, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
-
-const user = JSON.parse(localStorage.getItem("user") || "{}");
 
 const subjects = [
   { name: "Physics", emoji: "⚛️", progress: 72, xp: 2340, lessons: 18, total: 25, color: "from-[#5EF0DA]/10 to-transparent", border: "border-[#5EF0DA]/20", ring: "#5EF0DA" },
@@ -49,16 +48,33 @@ function ProgressRing({ progress, color, size = 60 }: { progress: number; color:
   );
 }
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.07 } },
 };
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 18 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
 export default function Dashboard() {
+  const [user, setUser] = useState<any>(
+    JSON.parse(localStorage.getItem("user") || "{}")
+  );
+
+  // When Login's background /me fetch completes and writes to localStorage,
+  // the storage event fires and we update the displayed user name here.
+  useEffect(() => {
+    const onStorage = () => {
+      const updated = JSON.parse(localStorage.getItem("user") || "{}");
+      setUser(updated);
+    };
+    window.addEventListener("storage", onStorage);
+    // Also try once on mount in case it was already saved
+    onStorage();
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   return (
     <AppShell>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6 pb-10">

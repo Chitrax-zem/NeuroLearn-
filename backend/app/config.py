@@ -17,6 +17,12 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
     FAISS_INDEX_PATH: str = "./faiss_store"
 
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = ""
+
     APP_ENV: str = "development"
     PORT: int = 8000
 
