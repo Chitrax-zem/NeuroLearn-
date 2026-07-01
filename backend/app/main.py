@@ -55,16 +55,17 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 
+    # Production Vercel URLs
     "https://neuro-learn-one.vercel.app",
     "https://neuro-learn-d2rv-phi.vercel.app",
-
-    # YOUR CURRENT VERCEL DEPLOY
-    "https://neuro-learn-d2rv-gb3c4rsqq-chitransh-nigams-projects-f07e1331.vercel.app",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Change to your frontend URL in production
+    allow_origins=origins,
+    # This regex covers every Vercel preview deploy URL for this project
+    # so you never have to update the list again after a new deployment.
+    allow_origin_regex=r"https://neuro-learn-.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
